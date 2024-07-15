@@ -6,6 +6,7 @@ from itertools import product
 from multiprocessing import Pool, cpu_count
 import pyfiglet
 import colorama
+import platform
 
 colorama.init()
 
@@ -15,11 +16,23 @@ def generate_passwords(characters, length=8):
     """
     return (''.join(password) for password in product(characters, repeat=length))
 
+def get_7zip_path():
+    system = platform.system()
+    if system == 'Windows':
+        return r'C:\\Program Files\\7-Zip\\7z.exe'
+    elif system == 'Linux':
+        return '/usr/bin/7z'
+    elif system == 'Darwin':  # macOS
+        return '/usr/local/bin/7z'
+    else:
+        raise NotImplementedError(f"Unsupported platform: {system}")
+    
 def crack_archive(password_info):
     archive_path, output_folder, characters, length = password_info
     for password in generate_passwords(characters, length):
         print(f"Testing password: {colorama.Fore.GREEN}{password}{colorama.Style.RESET_ALL}")
-        cmd = [r'C:\Program Files\7-Zip\7z.exe', 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
+        seven_zip_path = get_7zip_path()
+        cmd = [seven_zip_path, 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
             with open(os.path.join(output_folder, 'cracked_password.txt'), 'w') as f:
@@ -53,7 +66,8 @@ def crack_archive_wordlist(password_info):
     wordlist = load_wordlist(wordlist_path)
     for password in wordlist:
         print(f"Testing password: {colorama.Fore.GREEN}{password}{colorama.Style.RESET_ALL}")
-        cmd = [r'C:\\Program Files\\7-Zip\\7z.exe', 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
+        seven_zip_path = get_7zip_path()
+        cmd = [seven_zip_path, 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
             with open(os.path.join(output_folder, 'cracked_password.txt'), 'w') as f:
