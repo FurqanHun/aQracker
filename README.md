@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 1. Run the script `aQracker.py`.
 2. Enter the path to the archive file you want to crack.
-3. Choose either the wordlist or brute-force method. (For wordlist method, you need to provide a wordlist file (.txt) which must be in the same directory as the script.)
+3. Choose either the wordlist or brute-force method. (For wordlist method, you need to provide a wordlist file i.e. `.txt`.)
 4. Follow the prompts to input necessary details such as wordlist path, character set, and password length.
 
 ## Requirements
