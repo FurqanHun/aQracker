@@ -17,7 +17,13 @@ pip install -r requirements.txt
 ```
 3. Download and install 7-Zip from [here](https://www.7-zip.org/download.html) if not already installed.
 
-*Note: You must install the 7-Zip at default location (C:\Program Files\7-Zip\7z.exe) or you can change the path in the script. Also the script is tested on Windows 10 only. So my linux people and macos users, in theory it should work on your system too but I haven't tested it. If it doesnt try to change the path of 7z executable in the script.*
+***Note:** You must install the 7-Zip at default location,*
+
+For Windows: `C:\Program Files\7-Zip\7z.exe`
+For Linux: `/usr/bin/7z`
+For macos: `/usr/local/bin/7z`
+
+*Or you can change the path in the script. Also the script is tested on Windows 10 only. So my linux people and macos users, in theory it should work on your system too but I haven't tested it. If it doesnt try to change the path of 7z executable in the script.*
 
 ## Usage
 
