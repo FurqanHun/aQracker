@@ -5,6 +5,9 @@ import keyboard
 from itertools import product
 from multiprocessing import Pool, cpu_count
 import pyfiglet
+import colorama
+
+colorama.init()
 
 def generate_passwords(characters, length=8):
     """
@@ -15,7 +18,7 @@ def generate_passwords(characters, length=8):
 def crack_archive(password_info):
     archive_path, output_folder, characters, length = password_info
     for password in generate_passwords(characters, length):
-        print(f"Testing password: {password}")
+        print(f"Testing password: {colorama.Fore.GREEN}{password}{colorama.Style.RESET_ALL}")
         cmd = [r'C:\Program Files\7-Zip\7z.exe', 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
@@ -23,7 +26,7 @@ def crack_archive(password_info):
                 f.write(password)
             return password
         if keyboard.is_pressed('shift+esc+q'):
-            print("Stopping...")
+            print(f"{colorama.Fore.YELLOW}Stopping...{colorama.Style.RESET_ALL}")
             return None
     return None
 
@@ -49,7 +52,7 @@ def crack_archive_wordlist(password_info):
     archive_path, output_folder, wordlist_path = password_info
     wordlist = load_wordlist(wordlist_path)
     for password in wordlist:
-        print(f"Testing password: {password}")
+        print(f"Testing password: {colorama.Fore.GREEN}{password}{colorama.Style.RESET_ALL}")
         cmd = [r'C:\\Program Files\\7-Zip\\7z.exe', 'x', f'-p{password}', archive_path, f'-o{output_folder}', '-y']
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
@@ -69,18 +72,18 @@ if __name__ == "__main__":
     print("-----------------------------------------")
     # use pyfiglet to print aQracker
     ascii_banner = pyfiglet.figlet_format("aQracker")
-    print(ascii_banner)
+    print(f"{colorama.Fore.CYAN}{ascii_banner}{colorama.Style.RESET_ALL}")
     print("-----------------------------------------")
     print("v24.7.1 - Heatwave - 0xQan")
     print("\n" *4)
     archive_path = input("Enter Archive: ")
     if not os.path.exists(archive_path) or not os.path.isfile(archive_path):
-        print("Archive not found!")
+        print(f"{colorama.Fore.RED}Archive not found!{colorama.Style.RESET_ALL}")
         exit()
     archive_name = os.path.splitext(os.path.basename(archive_path))[0]
     output_folder = f"{archive_name}_cracked"
 
-    print("\n" *5)
+    print("\n" *4)
     print("Select method to crack the archive:")
     print("1. Wordlist")
     print("2. Brute Force")
@@ -90,13 +93,13 @@ if __name__ == "__main__":
     if method_choice == '1':
         wordlist_path = input("Enter Wordlist: ")
         if not os.path.exists(wordlist_path) or not os.path.isfile(wordlist_path) or None:
-            print("Wordlist not found!")
+            print(f"{colorama.Fore.RED}Wordlist not found!{colorama.Style.RESET_ALL}")
             exit()
         pool = Pool(cpu_count(), initializer=init_globals, initargs=(archive_path, output_folder))
         result = pool.apply(crack_archive_wordlist, args=((archive_path, output_folder, wordlist_path),))
 
     elif method_choice == '2':
-        print("\n" *5)
+        print("\n" *4)
         print("Select characters to include:")
         print("1. Numbers 0-9")
         print("2. Alphabets (small) a-z")
@@ -151,8 +154,8 @@ if __name__ == "__main__":
 
     if result:
         print("-----------------------------------------")
-        print(f"Success! Password found: {result}")
+        print(f"Success! Password found: {colorama.Fore.GREEN}{result}{colorama.Style.RESET_ALL}")
         print("-----------------------------------------")
     else:
         print("-----------------------------------------")
-        print("Password not found.")
+        print(f"{colorama.Fore.RED}Password not found.{colorama.Style.RESET_ALL}")
