@@ -1,14 +1,33 @@
 import subprocess
 import os
 import string
-import keyboard
 from itertools import product
 from multiprocessing import Pool, cpu_count
-import pyfiglet
-import colorama
 import platform
-
-colorama.init()
+try:
+    import pyfiglet
+    import colorama
+    import keyboard
+except ImportError:
+    print("Required libraries not found!")
+    print("Checking internet connection...")
+    result = subprocess.run(['ping', '-c', '1', 'google.com'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    if result.returncode == 0:
+        print("Installing required libraries...")
+        cmd = ['pip', 'install', '-r', 'requirements.txt']
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        if result.returncode == 0:
+            import pyfiglet
+            import colorama
+            import keyboard
+            colorama.init()
+            print(f"{colorama.Fore.GREEN}Required libraries installed successfully!{colorama.Style.RESET_ALL}")
+        else:
+            print("Failed to install required libraries!")
+            exit()
+    else:
+        print("No internet connection! Please connect to the internet and try again.")
+        exit()
 
 def generate_passwords(characters, length=8):
     """
@@ -21,12 +40,12 @@ def get_7zip_path():
     if system == 'Windows':
         return r'C:\\Program Files\\7-Zip\\7z.exe'
     elif system == 'Linux':
-        return '/usr/bin/7z'
-    elif system == 'Darwin':  # macOS
-        return '/usr/local/bin/7z'
+        return '7z'
+    elif system == 'Darwin':
+        return '7z'
     else:
         raise NotImplementedError(f"Unsupported platform: {system}")
-    
+
 def crack_archive(password_info):
     archive_path, output_folder, characters, length = password_info
     for password in generate_passwords(characters, length):
@@ -38,9 +57,11 @@ def crack_archive(password_info):
             with open(os.path.join(output_folder, 'cracked_password.txt'), 'w') as f:
                 f.write(password)
             return password
-        if keyboard.is_pressed('shift+esc+q'):
-            print(f"{colorama.Fore.YELLOW}Stopping...{colorama.Style.RESET_ALL}")
-            return None
+
+        if platform.system() != 'Linux':
+            if keyboard.is_pressed('shift+esc+q'):
+                print(f"{colorama.Fore.YELLOW}Stopping...{colorama.Style.RESET_ALL}")
+                return None
     return None
 
 def crack_archive_exact(args):
@@ -88,8 +109,17 @@ if __name__ == "__main__":
     ascii_banner = pyfiglet.figlet_format("aQracker")
     print(f"{colorama.Fore.CYAN}{ascii_banner}{colorama.Style.RESET_ALL}")
     print("-----------------------------------------")
-    print("v24.7.1 - Heatwave - 0xQan")
+    print("v24.8.1 - Heatwave - 0xQan")
     print("\n" *4)
+
+    try:
+        seven_zip_path = get_7zip_path()
+        cmd = [seven_zip_path, 'h']
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    except FileNotFoundError:
+        print(f"{colorama.Fore.RED}7-Zip not found! Please install 7-Zip and add it to PATH.{colorama.Style.RESET_ALL}")
+        exit()
+
     archive_path = input("Enter Archive: ")
     if not os.path.exists(archive_path) or not os.path.isfile(archive_path):
         print(f"{colorama.Fore.RED}Archive not found!{colorama.Style.RESET_ALL}")
@@ -136,6 +166,8 @@ if __name__ == "__main__":
         if '5' in characters_choice:
             characters += ' '
         if '6' in characters_choice:
+            characters = string.ascii_letters + string.digits + string.punctuation + ' '
+        if not characters:
             characters = string.ascii_letters + string.digits + string.punctuation + ' '
 
         exact_length_input = input("Enter exact password length (press Enter if none): ")

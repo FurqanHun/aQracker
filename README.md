@@ -1,6 +1,7 @@
 # aQracker
 
 aQracker is a simple Python script for cracking password-protected archives using 7-Zip.
+> *Current Version: v24.8.1 - Heatwave*
 
 ## Features
 
@@ -15,13 +16,14 @@ aQracker is a simple Python script for cracking password-protected archives usin
 ```
 pip install -r requirements.txt
 ```
+*You dont really have to install the dependencies manually. The script will do it for you.*
+
 3. Download and install 7-Zip from [here](https://www.7-zip.org/download.html) if not already installed.
 
 ***Note:** You must install the 7-Zip at default location,*
 
 For Windows: `C:\Program Files\7-Zip\7z.exe`
-For Linux: `/usr/bin/7z`
-For macos: `/usr/local/bin/7z`
+For Linux/macos: `7z` (must be in the PATH)
 
 *Or you can change the path in the script. Also the script is tested on Windows 10 only. So my linux people and macos users, in theory it should work on your system too but I haven't tested it. If it doesnt try to change the path of 7z executable in the script.*
 
@@ -35,7 +37,9 @@ For macos: `/usr/local/bin/7z`
 ## Requirements
 
 - Python 3.x
-- Libraries: `keyboard`, `pyfiglet`, `colorama`
+- Libraries (that doesn't come with python by default): `keyboard`, `pyfiglet`, `colorama`
+
+*I've disabled `Keyboard` usage in script for Linux as it requires you to run the script as root. If you want to use it, you can enable it in the script.*
 
 ## Author
 
